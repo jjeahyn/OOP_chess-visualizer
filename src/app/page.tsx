@@ -11,6 +11,16 @@ import {
   Piece,
 } from "@/lib/chess";
 
+const getPieceName = (piece: Piece): string => {
+  if (piece instanceof Pawn) return "Pawn";
+  if (piece instanceof Knight) return "Knight";
+  if (piece instanceof Bishop) return "Bishop";
+  if (piece instanceof Rook) return "Rook";
+  if (piece instanceof Queen) return "Queen";
+  if (piece instanceof King) return "King";
+  return "Piece";
+};
+
 const getUnicodeSymbol = (symbol: string) => {
   const map: Record<string, string> = {
     'p': '♟', 'P': '♟',
@@ -98,7 +108,7 @@ export default function ChessOOPVisualizer() {
     
     // Re-instantiate the current piece with the new color so internal get_symbol() updates properly
     if (selectedPiece) {
-      const currentType = PIECE_TYPES.find(p => p.name === selectedPiece.constructor.name);
+      const currentType = PIECE_TYPES.find(p => p.name === getPieceName(selectedPiece));
       if (currentType) {
         // Reset to initial position of the new color so it starts at the correct home rank
         handlePieceSelect(currentType, newColor);
@@ -114,7 +124,7 @@ export default function ChessOOPVisualizer() {
       let currentPiece = selectedPiece;
       
       // Pawn Promotion check
-      if (currentPiece.constructor.name === "Pawn") {
+      if (currentPiece instanceof Pawn) {
         const isWhitePromotion = globalColor === 'white' && r === 0;
         const isBlackPromotion = globalColor === 'black' && r === 7;
         
@@ -240,7 +250,7 @@ export default function ChessOOPVisualizer() {
           {/* Subclasses */}
           <div className="w-full max-w-[840px] grid grid-cols-3 sm:grid-cols-6 gap-4 pt-6">
             {PIECE_TYPES.map((item) => {
-              const isSelected = selectedPiece?.constructor.name === item.name;
+              const isSelected = selectedPiece ? getPieceName(selectedPiece) === item.name : false;
               return (
                 <div key={item.name} className="flex flex-col items-center group cursor-pointer" onClick={() => handlePieceSelect(item)}>
                   <div className={`w-full bg-stone-800/80 backdrop-blur-sm border rounded-xl p-4 flex flex-col items-center transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] ${isSelected ? 'border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.2)] bg-stone-800' : 'border-stone-700/50 hover:bg-stone-800 hover:border-amber-500/50'}`}>
@@ -269,7 +279,7 @@ export default function ChessOOPVisualizer() {
             <p className="text-sm text-stone-400 mb-6 text-center h-5">
               {selectedPiece ? (
                 <>
-                  <strong className="text-white mr-1">{selectedPiece.constructor.name}</strong> 
+                  <strong className="text-white mr-1">{getPieceName(selectedPiece)}</strong> 
                   is at 
                   <span className="ml-1 px-1.5 py-0.5 rounded bg-stone-900 text-amber-400 font-mono">
                     {toAlgebraic(selectedPiece.position[0], selectedPiece.position[1])}
